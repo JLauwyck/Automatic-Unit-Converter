@@ -2,7 +2,7 @@
 
   "manifest_version": 2,
   "name": "LBS to KG",
-  "version": "1.01",
+  "version": "1",
 
   "description": "Automatically converts weight written in pounds to kg.",
 
