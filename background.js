@@ -44,7 +44,9 @@ function replaceText (node) {
 	var match = regexp.exec(content);
 	while (match != null) {
 		var getal = regexpGetal.exec(match[0]);
-		var kg = convert(getal[0]);
+		var gewicht = getal[0];
+		gewicht = gewicht.replace(/,/g, "");
+		var kg = convert(gewicht);
 		var nieuw = kg + " kg";
 		console.log(match);
 		console.log(getal);
