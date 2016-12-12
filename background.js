@@ -3,7 +3,7 @@
  * all occurrences of each number written in lbs with its kg counterpart.
  */
 
-var regexp = /\d+(,|.)?\d*\s?(l|L)(b|B)(s|S)?/g;
+var regexp = /\d+(,|.)?\d*\s?((l|L)(b|B)(s|S)?|((P|p)ound(s|)))/g;
 var regexpGetal = /\d+(,|\.)?\d*/i;
 
 function convert(number){
