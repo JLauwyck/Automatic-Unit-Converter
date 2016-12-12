@@ -3,10 +3,13 @@
  * all occurrences of each number written in lbs with its kg counterpart.
  */
 
-var regexp = /\d+(,|.)?\d*\s?((l|L)(b|B)(s|S)?|((P|p)ound(s|)))/g;
+var regexpGewicht = /\d+(,|.)?\d*\s?((l|L)(b|B)(s|S)?|((P|p)ound(s|)))/g;
+var regexpLengte = /((\d+\s?(((F|f)eet)|'|(ft)))(\s?\d+\s?(((I|i)nch)|"|(in)))|(\d+\s?(((F|f)eet)|'|(ft)))|(\s?\d+\s?(((I|i)nch)|"|(in))))/g;
 var regexpGetal = /\d+(,|\.)?\d*/i;
-
-function convert(number){
+	//Converts weight measured in lbs to weight in kg
+	//Only floating point numbers are working
+	//Commaseperated values (as is common in Europe) are not recognized and will result in NaN
+function convertGewicht(number){
 	var kilo = number * 0.45359237;
 	return Math.round(kilo * 100) / 100;
 }
@@ -41,19 +44,44 @@ function replaceText (node) {
     // once, at the end.
     let content = node.textContent;
 
-	var match = regexp.exec(content);
+	//Detect a weight in lbs and convert every instance of it in 'content' to
+	//corresponding weight in kg.
+	var match = regexpGewicht.exec(content);
 	while (match != null) {
 		var getal = regexpGetal.exec(match[0]);
 		var gewicht = getal[0];
+		//Weights above 1,000 are often epicted with a comma. 
+		//As described above, this results in NaN
+		//Here we delete every comma (shouldn't be a problem for other notations
+		//where a comma is used to indicate float, because this is usually done 
+		//in combination with KG)
 		gewicht = gewicht.replace(/,/g, "");
-		var kg = convert(gewicht);
+		var kg = convertGewicht(gewicht);
 		var nieuw = kg + " kg";
-		console.log(match);
-		console.log(getal);
-		console.log(" == " + nieuw);
 		content = content.replace(match[0], nieuw);
+		//Search for next instance of weight in same sentence/content.
+		match = regexpGewicht.exec(content);
+	}
+	
+	
+	
+	var match = regexpLengte.exec(content);
+	while (match != null) {
+		//var getal = regexpGetal.exec(match[0]);
+		//var gewicht = getal[0];
+		//Weights above 1,000 are often epicted with a comma. 
+		//As described above, this results in NaN
+		//Here we delete every comma (shouldn't be a problem for other notations
+		//where a comma is used to indicate float, because this is usually done 
+		//in combination with KG)
+		//gewicht = gewicht.replace(/,/g, "");
+		//var kg = convertGewicht(gewicht);
+		//var nieuw = kg + " kg";
+		//content = content.replace(match[0], nieuw);
+		//Search for next instance of weight in same sentence/content.
 		
-		match = regexp.exec(content);
+		console.log(match);
+		match = regexpGewicht.exec(content);
 	}
 
     // Now that all the replacements are done, perform the DOM manipulation.
