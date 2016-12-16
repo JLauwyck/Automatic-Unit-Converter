@@ -4,9 +4,9 @@
  */
 
 var regexpGewicht = /\d+(,|\.)?\d*\s?((l|L)(b|B)(s|S)?|((P|p)ound(s|)))/g;
-var regexpTemp = /(\d+(,|\.)?\d*\s?(°(F|f)(ahrenheit)?))/g;
+var regexpTemp = /((-\s|-)?\d+(,|\.)?\d*\s?(°?(F|f)(ahrenheit)?))/g;
 
-var regexpGetal = /\d+(,|\.)?\d*/i;
+var regexpGetal = /(-\s|-)?\d+(,|\.)?\d*/i;
 
 
 	//Converts weight measured in lbs to weight in kg
@@ -22,8 +22,6 @@ function convertGewicht(number){
 	//Commaseperated values (as is common in Europe) are not recognized and will result in NaN
 function convertTemp(number){
 	var celsius = (((number - 32) / 9) * 5);
-	console.log("temp voor afronden is ");
-	console.log(celsius);
 	return Math.round(celsius * 100) / 100;
 }
 
@@ -84,16 +82,14 @@ function replaceText (node) {
 		var getal = regexpGetal.exec(match[0]);
 		var temp = getal[0];
 		temp = temp.replace(/,/g, ".");
+		temp = temp.replace(/-\s/g, "-");
+		console.log(getal[0]);
+		console.log(temp);
 		var celsius = convertTemp(temp);
 		var nieuw = celsius + " °Celsius ";
 		content = content.replace(match[0], nieuw);
 		
 		//Search for next instance of weight in same sentence/content.
-		console.log(match);
-		console.log(temp);
-		console.log(celsius);
-		console.log(nieuw);
-		console.log(content);
 		match = regexpTemp.exec(content);
 	}
 
