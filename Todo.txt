@@ -1,6 +1,6 @@
-uitbreiden nr warmte en snelheid enal
-dan met opties pagina's daj kan kiezen van welke eenheid naar welke
-bepaalde aan zetten andere af zetten
+uitbreiden nr snelheid enal
+
+opties pagina
+
 tooltip
 
-negatieve temp
