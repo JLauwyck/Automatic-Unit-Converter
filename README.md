@@ -6,6 +6,7 @@ Currently only the english convention is converted (comma as separator between t
 
 Thus far implemented: 	
 		lbs/pounds to kg
+		
 		fahrenheit to celsius
 		
 		
