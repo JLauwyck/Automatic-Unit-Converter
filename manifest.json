@@ -12,6 +12,7 @@
 
   "content_scripts": [
     {
+	  "exclude_matches": ["*://*.facebook.com/*", "*://*.messenger.com/*"],
       "matches": ["<all_urls>"],
       "js": ["background.js"]
     }

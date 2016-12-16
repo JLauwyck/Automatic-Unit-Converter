@@ -3,15 +3,28 @@
  * all occurrences of each number written in lbs with its kg counterpart.
  */
 
-var regexpGewicht = /\d+(,|.)?\d*\s?((l|L)(b|B)(s|S)?|((P|p)ound(s|)))/g;
-var regexpLengte = /((\d+\s?(((F|f)eet)|'|(ft)))(\s?\d+\s?(((I|i)nch)|"|(in)))|(\d+\s?(((F|f)eet)|'|(ft)))|(\s?\d+\s?(((I|i)nch)|"|(in))))/g;
+var regexpGewicht = /\d+(,|\.)?\d*\s?((l|L)(b|B)(s|S)?|((P|p)ound(s|)))/g;
+var regexpTemp = /(\d+(,|\.)?\d*\s?(°(F|f)(ahrenheit)?))/g;
+
 var regexpGetal = /\d+(,|\.)?\d*/i;
+
+
 	//Converts weight measured in lbs to weight in kg
 	//Only floating point numbers are working
 	//Commaseperated values (as is common in Europe) are not recognized and will result in NaN
 function convertGewicht(number){
 	var kilo = number * 0.45359237;
 	return Math.round(kilo * 100) / 100;
+}
+
+	//Converts temperature measured in fahrenheit to temperature in celsius
+	//Only floating point numbers are working
+	//Commaseperated values (as is common in Europe) are not recognized and will result in NaN
+function convertTemp(number){
+	var celsius = (((number - 32) / 9) * 5);
+	console.log("temp voor afronden is ");
+	console.log(celsius);
+	return Math.round(celsius * 100) / 100;
 }
 
 /**
@@ -34,7 +47,8 @@ function replaceText (node) {
     // Skip textarea nodes due to the potential for accidental submission
     // of substituted emoji where none was intended.
     if (node.parentNode &&
-        node.parentNode.nodeName === 'TEXTAREA') {
+        (node.parentNode.nodeName === 'TEXTAREA' || node.parentNode.nodeName === 'INPUT')){ 
+		//Input fields shouldn't change.
       return;
     }
 
@@ -65,23 +79,22 @@ function replaceText (node) {
 	
 	
 	
-	var match = regexpLengte.exec(content);
+	var match = regexpTemp.exec(content);
 	while (match != null) {
-		//var getal = regexpGetal.exec(match[0]);
-		//var gewicht = getal[0];
-		//Weights above 1,000 are often epicted with a comma. 
-		//As described above, this results in NaN
-		//Here we delete every comma (shouldn't be a problem for other notations
-		//where a comma is used to indicate float, because this is usually done 
-		//in combination with KG)
-		//gewicht = gewicht.replace(/,/g, "");
-		//var kg = convertGewicht(gewicht);
-		//var nieuw = kg + " kg";
-		//content = content.replace(match[0], nieuw);
-		//Search for next instance of weight in same sentence/content.
+		var getal = regexpGetal.exec(match[0]);
+		var temp = getal[0];
+		temp = temp.replace(/,/g, ".");
+		var celsius = convertTemp(temp);
+		var nieuw = celsius + " °Celsius ";
+		content = content.replace(match[0], nieuw);
 		
+		//Search for next instance of weight in same sentence/content.
 		console.log(match);
-		match = regexpGewicht.exec(content);
+		console.log(temp);
+		console.log(celsius);
+		console.log(nieuw);
+		console.log(content);
+		match = regexpTemp.exec(content);
 	}
 
     // Now that all the replacements are done, perform the DOM manipulation.
