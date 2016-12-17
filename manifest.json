@@ -1,10 +1,10 @@
 {
 
   "manifest_version": 2,
-  "name": "LBS to KG",
-  "version": "1",
+  "name": "Automatic Unit Converter",
+  "version": "1.1",
 
-  "description": "Automatically converts weight written in pounds to kg.",
+  "description": "Automatically different (American) units to their SI/Europian counterparts.",
 
   "icons": {
     "48": "icons/border-48.png"

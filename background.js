@@ -4,9 +4,9 @@
  */
 
 var regexpGewicht = /\d+(,|\.)?\d*\s?((l|L)(b|B)(s|S)?|((P|p)ound(s|)))/g;
-var regexpTemp = /((-\s|-)?\d+(,|\.)?\d*\s?(°?(F|f)(ahrenheit)?))/g;
+var regexpTemp = /(((-|-|−)\s|(-|-|−))?\d+(,|\.)?\d*\s?(°?(F|f)(ahrenheit)?)\W)/g;
 
-var regexpGetal = /(-\s|-)?\d+(,|\.)?\d*/i;
+var regexpGetal = /((-|-|−)\s|(-|-|−))?\d+(,|\.)?\d*/i;
 
 
 	//Converts weight measured in lbs to weight in kg
@@ -21,8 +21,21 @@ function convertGewicht(number){
 	//Only floating point numbers are working
 	//Commaseperated values (as is common in Europe) are not recognized and will result in NaN
 function convertTemp(number){
-	var celsius = (((number - 32) / 9) * 5);
-	return Math.round(celsius * 100) / 100;
+	console.log("Nieuw nummer yay");
+	console.log(number);
+	var test = number.valueOf();
+	console.log(test);
+	var deel1 = (test - 32);
+	console.log(deel1);
+	var deel2 = (deel1 / 9);
+	console.log(deel2);
+	var deel3 = (deel2 * 5);
+	console.log(deel3);
+	/*var celsius = (((number - 32) / 9) * 5);
+	var c = celsius.valueOf();
+	console.log(celsius);
+	console.log(c);*/
+	return Math.round(deel3 * 100) / 100;
 }
 
 /**
@@ -69,8 +82,11 @@ function replaceText (node) {
 		//in combination with KG)
 		gewicht = gewicht.replace(/,/g, "");
 		var kg = convertGewicht(gewicht);
-		var nieuw = kg + " kg";
-		content = content.replace(match[0], nieuw);
+		if(!isNaN(kg)){
+			var nieuw = kg + " kg";
+			content = content.replace(match[0], nieuw);
+		}
+		
 		//Search for next instance of weight in same sentence/content.
 		match = regexpGewicht.exec(content);
 	}
@@ -82,13 +98,16 @@ function replaceText (node) {
 		var getal = regexpGetal.exec(match[0]);
 		var temp = getal[0];
 		temp = temp.replace(/,/g, ".");
-		temp = temp.replace(/-\s/g, "-");
-		console.log(getal[0]);
-		console.log(temp);
-		var celsius = convertTemp(temp);
-		var nieuw = celsius + " °Celsius ";
-		content = content.replace(match[0], nieuw);
+		temp = temp.replace(/(-|-|−)\s/g, "-");
 		
+		var celsius = convertTemp(temp);
+		if(!isNaN(celsius)){
+			var nieuw = celsius + " °Celsius ";
+			content = content.replace(match[0], nieuw);
+		}
+		
+		console.log(match);
+		console.log(temp);
 		//Search for next instance of weight in same sentence/content.
 		match = regexpTemp.exec(content);
 	}
