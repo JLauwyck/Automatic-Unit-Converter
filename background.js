@@ -21,20 +21,10 @@ function convertGewicht(number){
 	//Only floating point numbers are working
 	//Commaseperated values (as is common in Europe) are not recognized and will result in NaN
 function convertTemp(number){
-	console.log("Nieuw nummer yay");
-	console.log(number);
 	var test = number.valueOf();
-	console.log(test);
 	var deel1 = (test - 32);
-	console.log(deel1);
 	var deel2 = (deel1 / 9);
-	console.log(deel2);
 	var deel3 = (deel2 * 5);
-	console.log(deel3);
-	/*var celsius = (((number - 32) / 9) * 5);
-	var c = celsius.valueOf();
-	console.log(celsius);
-	console.log(c);*/
 	return Math.round(deel3 * 100) / 100;
 }
 
@@ -58,16 +48,22 @@ function replaceText (node) {
     // Skip textarea nodes due to the potential for accidental submission
     // of substituted emoji where none was intended.
     if (node.parentNode &&
-        (node.parentNode.nodeName === 'TEXTAREA' || node.parentNode.nodeName === 'INPUT')){ 
+        (node.parentNode.nodeName === 'TEXTAREA' || node.parentNode.nodeName === 'INPUT' || node.parentNode.isContentEditable)){ 
 		//Input fields shouldn't change.
       return;
     }
+	if(node.isContentEditable){ //editable fields should stay untouched.
+		return;
+	}
 
     // Because DOM manipulation is slow, we don't want to keep setting
     // textContent after every replacement. Instead, manipulate a copy of
     // this string outside of the DOM and then perform the manipulation
     // once, at the end.
     let content = node.textContent;
+	//boolean to check whether there needs to be an update to the node.
+	var edited = false;
+	
 
 	//Detect a weight in lbs and convert every instance of it in 'content' to
 	//corresponding weight in kg.
@@ -85,6 +81,7 @@ function replaceText (node) {
 		if(!isNaN(kg)){
 			var nieuw = kg + " kg";
 			content = content.replace(match[0], nieuw);
+			edited = true;
 		}
 		
 		//Search for next instance of weight in same sentence/content.
@@ -97,29 +94,35 @@ function replaceText (node) {
 	while (match != null) {
 		var getal = regexpGetal.exec(match[0]);
 		var temp = getal[0];
+		var last = match[0].slice(-1);
 		temp = temp.replace(/,/g, ".");
 		temp = temp.replace(/(-|-|−)\s/g, "-");
 		
 		var celsius = convertTemp(temp);
 		if(!isNaN(celsius)){
-			var nieuw = celsius + " °Celsius ";
+			var nieuw = celsius + " °Celsius" + last;
 			content = content.replace(match[0], nieuw);
+			edited = true;
 		}
 		
-		console.log(match);
-		console.log(temp);
 		//Search for next instance of weight in same sentence/content.
 		match = regexpTemp.exec(content);
 	}
 
-    // Now that all the replacements are done, perform the DOM manipulation.
-    node.textContent = content;
+	if(edited){
+		// Now that all the replacements are done, perform the DOM manipulation.
+		// But only if there is something to replace.
+		node.textContent = content;
+	}
   }
   else {
     // This node contains more than just text, call replaceText() on each
     // of its children.
     for (let i = 0; i < node.childNodes.length; i++) {
-      replaceText(node.childNodes[i]);
+		if(!node.childNodes[i].isContentEditable){
+			// If parent node is editable, skip the children. They will likely also be editable (see Gmail for example).
+			replaceText(node.childNodes[i]);
+	  }
     }    
   }
 }
