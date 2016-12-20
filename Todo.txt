@@ -1,8 +1,6 @@
 Op wikipedia (temperatuur) is er nog altijd 1 getal (-459.67) die niet kan worden omgezet om
 1 of andere reden.
 Overal anders werkt het wel. -> omzeild door niet om te zetten waar niet lukt
-Blijkbaar wordt '20 ft' ook omgezet (herkent 20 f) -> Fixed
-
 
 uitbreiden nr snelheid enal
 
