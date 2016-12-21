@@ -6,6 +6,8 @@
 
   "description": "Automatically different (American) units to their SI/Europian counterparts.",
 
+    "permissions": ["storage"]
+  
   "icons": {
     "48": "icons/border-48.png"
   },
@@ -15,6 +17,13 @@
       "matches": ["<all_urls>"],
       "js": ["background.js"]
     }
-  ]
+  ],
+  
+  "options_ui": {
+    "page": "options.html"
+  },
+
+
+
 
 }

@@ -8,6 +8,9 @@ var regexpTemp = /(((-|-|−)\s|(-|-|−))?\d+(,|\.)?\d*\s?(°?(F|f)(ahrenheit)?
 
 var regexpGetal = /((-|-|−)\s|(-|-|−))?\d+(,|\.)?\d*/i;
 
+var LBS = true;
+var FAHRENHEIT = true;
+
 
 	//Converts weight measured in lbs to weight in kg
 	//Only floating point numbers are working
@@ -27,6 +30,29 @@ function convertTemp(number){
 	var deel3 = (deel2 * 5);
 	return Math.round(deel3 * 100) / 100;
 }
+
+
+
+
+
+ function onError(error) {
+  console.log(`Error: ${error}`);
+}
+
+function onGot(item) {
+  LBS = item.lbs;
+  FAHRENHEIT = item.fahrenheit;
+
+  replaceText(document.body);
+}
+
+var getItems = browser.storage.local.get();
+getItems.then(onGot, onError);
+
+
+
+
+
 
 /**
  * Substitute.
@@ -64,49 +90,57 @@ function replaceText (node) {
 	//boolean to check whether there needs to be an update to the node.
 	var edited = false;
 	
-
-	//Detect a weight in lbs and convert every instance of it in 'content' to
-	//corresponding weight in kg.
-	var match = regexpGewicht.exec(content);
-	while (match != null) {
-		var getal = regexpGetal.exec(match[0]);
-		var gewicht = getal[0];
-		//Weights above 1,000 are often epicted with a comma. 
-		//As described above, this results in NaN
-		//Here we delete every comma (shouldn't be a problem for other notations
-		//where a comma is used to indicate float, because this is usually done 
-		//in combination with KG)
-		gewicht = gewicht.replace(/,/g, "");
-		var kg = convertGewicht(gewicht);
-		if(!isNaN(kg)){
-			var nieuw = kg + " kg";
-			content = content.replace(match[0], nieuw);
-			edited = true;
+	if(LBS){
+		//Detect a weight in lbs and convert every instance of it in 'content' to
+		//corresponding weight in kg.
+		var match = regexpGewicht.exec(content);
+		while (match != null) {
+			var getal = regexpGetal.exec(match[0]);
+			var gewicht = getal[0];
+			//Weights above 1,000 are often epicted with a comma. 
+			//As described above, this results in NaN
+			//Here we delete every comma (shouldn't be a problem for other notations
+			//where a comma is used to indicate float, because this is usually done 
+			//in combination with KG)
+			gewicht = gewicht.replace(/,/g, "");
+			var kg = convertGewicht(gewicht);
+			if(!isNaN(kg)){
+					/*<div class="couponcode">Second Link
+						<span class="coupontooltip"> Content 2</span>
+					</div>*/
+				//Endless loop => match[0] is itself also a match, so it keeps repeating itself.
+				//var nieuw = "<div class=\"toolAUC\">" + kg + " kg " + "<span class=\"tooltipAUC\">"+ match[0]+" </span> </div>";
+				//console.log(nieuw);
+				var nieuw = kg+" kg";
+				content = content.replace(match[0], nieuw);
+				edited = true;
+			}
+			
+			//Search for next instance of weight in same sentence/content.
+			match = regexpGewicht.exec(content);
 		}
-		
-		//Search for next instance of weight in same sentence/content.
-		match = regexpGewicht.exec(content);
 	}
 	
 	
-	
-	var match = regexpTemp.exec(content);
-	while (match != null) {
-		var getal = regexpGetal.exec(match[0]);
-		var temp = getal[0];
-		var last = match[0].slice(-1);
-		temp = temp.replace(/,/g, ".");
-		temp = temp.replace(/(-|-|−)\s/g, "-");
-		
-		var celsius = convertTemp(temp);
-		if(!isNaN(celsius)){
-			var nieuw = celsius + " °Celsius" + last;
-			content = content.replace(match[0], nieuw);
-			edited = true;
+	if(FAHRENHEIT){
+		var match = regexpTemp.exec(content);
+		while (match != null) {
+			var getal = regexpGetal.exec(match[0]);
+			var temp = getal[0];
+			var last = match[0].slice(-1);
+			temp = temp.replace(/,/g, ".");
+			temp = temp.replace(/(-|-|−)\s/g, "-");
+			
+			var celsius = convertTemp(temp);
+			if(!isNaN(celsius)){
+				var nieuw = celsius + " °Celsius" + last;
+				content = content.replace(match[0], nieuw);
+				edited = true;
+			}
+			
+			//Search for next instance of weight in same sentence/content.
+			match = regexpTemp.exec(content);
 		}
-		
-		//Search for next instance of weight in same sentence/content.
-		match = regexpTemp.exec(content);
 	}
 
 	if(edited){
@@ -128,7 +162,7 @@ function replaceText (node) {
 }
 
 // Start the recursion from the body tag.
-replaceText(document.body);
+//replaceText(document.body);
 
 // Now monitor the DOM for additions and substitute emoji into new nodes.
 // @see https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver.
